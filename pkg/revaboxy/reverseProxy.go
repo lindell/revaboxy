@@ -79,6 +79,7 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 		}
 	}
 
+	// Add a cookie to the response that
 	modifyResponse := func(r *http.Response) error {
 		name := r.Request.Header.Get(fmt.Sprintf("%s-name", HeaderName))
 		existingCookie, _ := r.Request.Cookie(fmt.Sprintf("%s-name", CookieName))
@@ -97,6 +98,8 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 		return nil
 	}
 
+	// Make sure a failed request (by not reaching the host) to a version that is not
+	// the default one is redirected to the default one
 	defaultReverseProxy := httputil.NewSingleHostReverseProxy(versions[DefaultName].URL)
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
 		name := r.Header.Get(fmt.Sprintf("%s-name", HeaderName))
