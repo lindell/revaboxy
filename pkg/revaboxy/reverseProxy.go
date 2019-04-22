@@ -9,18 +9,26 @@ import (
 	"time"
 )
 
+// DefaultName is the name of the default version
+// The version with this name will take up the rest of the percentage if any remain
+// when adding all percentages together
 const DefaultName = "default"
 
-const CookieName = "revaboxy"
+const cookieName = "revaboxy"
 
-const HeaderName = "revaboxy"
+const headerName = "revaboxy"
 
+// Version is one of the versions used in the A/B/C... test
 type Version struct {
-	Name       string
-	URL        *url.URL
+	// The name of the a/b testing version
+	Name string
+	// The URL to the root of the target
+	URL *url.URL
+	// The percentage from 0-1 of this version being used
 	Percentage float64
 }
 
+// Logger is the logger interface used with revaboxy
 type Logger interface {
 	Log(string)
 }
@@ -35,9 +43,11 @@ func (s *settings) Log(log string) {
 	}
 }
 
+// SettingChanger changes the revaboxy settings
 type SettingChanger func(s *settings)
 
-func UseLogger(l Logger) SettingChanger {
+// WithLogger sets the logger to be used
+func WithLogger(l Logger) SettingChanger {
 	return func(s *settings) {
 		s.logger = l
 	}
@@ -62,7 +72,7 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 	// The director changes the request. If the user has already been assigned a version, that one will be used.
 	// Otherwise a random version will be assigned to the user
 	director := func(req *http.Request) {
-		cookie, _ := req.Cookie(fmt.Sprintf("%s-name", CookieName))
+		cookie, _ := req.Cookie(fmt.Sprintf("%s-name", cookieName))
 
 		if cookie != nil {
 			version, ok := versions[cookie.Value]
@@ -81,12 +91,12 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 
 	// Add a cookie to the response that
 	modifyResponse := func(r *http.Response) error {
-		name := r.Request.Header.Get(fmt.Sprintf("%s-name", HeaderName))
-		existingCookie, _ := r.Request.Cookie(fmt.Sprintf("%s-name", CookieName))
+		name := r.Request.Header.Get(fmt.Sprintf("%s-name", headerName))
+		existingCookie, _ := r.Request.Cookie(fmt.Sprintf("%s-name", cookieName))
 
 		if name != "" && (existingCookie == nil || versions.get(existingCookie.Value) != nil) {
 			newCookie := &http.Cookie{
-				Name:     fmt.Sprintf("%s-name", CookieName),
+				Name:     fmt.Sprintf("%s-name", cookieName),
 				Value:    name,
 				Path:     "/",
 				Expires:  time.Now().Add(time.Hour * 24 * 3),
@@ -102,7 +112,7 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 	// the default one is redirected to the default one
 	defaultReverseProxy := httputil.NewSingleHostReverseProxy(versions[DefaultName].URL)
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
-		name := r.Header.Get(fmt.Sprintf("%s-name", HeaderName))
+		name := r.Header.Get(fmt.Sprintf("%s-name", headerName))
 		if name != "" && name != DefaultName {
 			settings.Log(fmt.Sprintf("could not connect to %s, using default instead", name))
 			defaultReverseProxy.ServeHTTP(w, r)
@@ -136,7 +146,7 @@ func modifyRequest(req *http.Request, targetVersion *Version) {
 		req.Header.Set("User-Agent", "")
 	}
 
-	req.Header.Add(fmt.Sprintf("%s-name", HeaderName), targetVersion.Name)
+	req.Header.Add(fmt.Sprintf("%s-name", headerName), targetVersion.Name)
 }
 
 func singleJoiningSlash(a, b string) string {

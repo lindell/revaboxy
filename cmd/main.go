@@ -50,7 +50,7 @@ func main() {
 
 	proxy, err := revaboxy.New(
 		versions,
-		revaboxy.UseLogger(&logger{}),
+		revaboxy.WithLogger(&logger{}),
 	)
 	if err != nil {
 		log.Fatal(err)
