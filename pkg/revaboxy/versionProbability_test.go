@@ -23,7 +23,7 @@ func TestNormalVersionProbability(t *testing.T) {
 		t.Error("versions should be valid", err)
 	}
 
-	if !versionProbabilityWithinRange(vv, "test1", 0.1, 0.005) {
+	if !versionProbabilityWithinRange(vv, "test1", 0.1, 0.01) {
 		t.Fatal("version not selected within margin")
 	}
 }
@@ -84,7 +84,7 @@ func TestDefaultNameRestProbability(t *testing.T) {
 		t.Error("versions should be valid", err)
 	}
 
-	if !versionProbabilityWithinRange(vv, DefaultName, 0.7, 0.005) {
+	if !versionProbabilityWithinRange(vv, DefaultName, 0.7, 0.01) {
 		t.Fatal("version not selected within margin")
 	}
 }

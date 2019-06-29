@@ -34,7 +34,8 @@ type Logger interface {
 }
 
 type settings struct {
-	logger Logger
+	logger       Logger
+	roundTripper http.RoundTripper
 }
 
 func (s *settings) Log(log string) {
@@ -53,9 +54,18 @@ func WithLogger(l Logger) SettingChanger {
 	}
 }
 
+// WithTransport sets the http transport to be used
+func WithTransport(rt http.RoundTripper) SettingChanger {
+	return func(s *settings) {
+		s.roundTripper = rt
+	}
+}
+
 // New ...
 func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProxy, error) {
-	settings := &settings{}
+	settings := &settings{
+		roundTripper: http.DefaultTransport,
+	}
 	for _, s := range settingChangers {
 		s(settings)
 	}
@@ -111,9 +121,12 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 	// Make sure a failed request (by not reaching the host) to a version that is not
 	// the default one is redirected to the default one
 	defaultReverseProxy := httputil.NewSingleHostReverseProxy(versions[DefaultName].URL)
+	defaultReverseProxy.Transport = settings.roundTripper
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
 		name := r.Header.Get(fmt.Sprintf("%s-name", headerName))
+		fmt.Println("error-name", name)
 		if name != "" && name != DefaultName {
+			fmt.Println("error-name", versions[DefaultName].URL)
 			settings.Log(fmt.Sprintf("could not connect to %s, using default instead", name))
 			defaultReverseProxy.ServeHTTP(w, r)
 			return
@@ -126,6 +139,7 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 		Director:       director,
 		ModifyResponse: modifyResponse,
 		ErrorHandler:   errorHandler,
+		Transport:      settings.roundTripper,
 	}, nil
 }
 
