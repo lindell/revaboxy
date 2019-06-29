@@ -9,8 +9,6 @@ import (
 	"net/url"
 	"strings"
 	"testing"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 type testRoundTripper struct {
@@ -132,8 +130,6 @@ func TestReverseProxyWithUnavailableVersion(t *testing.T) {
 		t.Fatal("could not create proxy", err)
 	}
 
-	spew.Dump(proxy.ErrorHandler)
-
 	// Make the first request
 	recorder := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodGet, "http://faulurl.test/path1", nil)
@@ -145,5 +141,4 @@ func TestReverseProxyWithUnavailableVersion(t *testing.T) {
 	if expected, real := http.StatusOK, recorder.Code; expected != real {
 		t.Fatalf("expected status code %v, got %v", expected, real)
 	}
-
 }

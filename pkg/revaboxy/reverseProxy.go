@@ -9,6 +9,13 @@ import (
 	"time"
 )
 
+// Revaboxy creates an A/B test between different urls.
+// It does also save which test i run on the client through cookies and serve the same version on subsequent requests
+// The revaboxy handler should be created with New
+type Revaboxy struct {
+	reverseProxy *httputil.ReverseProxy
+}
+
 // DefaultName is the name of the default version
 // The version with this name will take up the rest of the percentage if any remain
 // when adding all percentages together
@@ -61,8 +68,8 @@ func WithTransport(rt http.RoundTripper) SettingChanger {
 	}
 }
 
-// New ...
-func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProxy, error) {
+// New creates a revaboxy client. Versions required but, any number of additional settings may be provided
+func New(vv []Version, settingChangers ...SettingChanger) (*Revaboxy, error) {
 	settings := &settings{
 		roundTripper: http.DefaultTransport,
 	}
@@ -135,11 +142,13 @@ func New(vv []Version, settingChangers ...SettingChanger) (*httputil.ReverseProx
 		w.WriteHeader(http.StatusBadGateway)
 	}
 
-	return &httputil.ReverseProxy{
-		Director:       director,
-		ModifyResponse: modifyResponse,
-		ErrorHandler:   errorHandler,
-		Transport:      settings.roundTripper,
+	return &Revaboxy{
+		reverseProxy: &httputil.ReverseProxy{
+			Director:       director,
+			ModifyResponse: modifyResponse,
+			ErrorHandler:   errorHandler,
+			Transport:      settings.roundTripper,
+		},
 	}, nil
 }
 
@@ -161,6 +170,10 @@ func modifyRequest(req *http.Request, targetVersion *Version) {
 	}
 
 	req.Header.Add(fmt.Sprintf("%s-name", headerName), targetVersion.Name)
+}
+
+func (revaboxy *Revaboxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	revaboxy.reverseProxy.ServeHTTP(w, r)
 }
 
 func singleJoiningSlash(a, b string) string {
