@@ -131,9 +131,7 @@ func New(vv []Version, settingChangers ...SettingChanger) (*Revaboxy, error) {
 	defaultReverseProxy.Transport = settings.roundTripper
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
 		name := r.Header.Get(fmt.Sprintf("%s-name", headerName))
-		fmt.Println("error-name", name)
 		if name != "" && name != DefaultName {
-			fmt.Println("error-name", versions[DefaultName].URL)
 			settings.Log(fmt.Sprintf("could not connect to %s, using default instead", name))
 			defaultReverseProxy.ServeHTTP(w, r)
 			return
