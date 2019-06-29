@@ -51,25 +51,25 @@ func (s *settings) Log(log string) {
 	}
 }
 
-// SettingChanger changes the revaboxy settings
-type SettingChanger func(s *settings)
+// Setting changes the revaboxy settings
+type Setting func(s *settings)
 
 // WithLogger sets the logger to be used
-func WithLogger(l Logger) SettingChanger {
+func WithLogger(l Logger) Setting {
 	return func(s *settings) {
 		s.logger = l
 	}
 }
 
 // WithTransport sets the http transport to be used
-func WithTransport(rt http.RoundTripper) SettingChanger {
+func WithTransport(rt http.RoundTripper) Setting {
 	return func(s *settings) {
 		s.roundTripper = rt
 	}
 }
 
 // New creates a revaboxy client. Versions required but, any number of additional settings may be provided
-func New(vv []Version, settingChangers ...SettingChanger) (*Revaboxy, error) {
+func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	settings := &settings{
 		roundTripper: http.DefaultTransport,
 	}
