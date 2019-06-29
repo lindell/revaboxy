@@ -21,10 +21,6 @@ type Revaboxy struct {
 // when adding all percentages together
 const DefaultName = "default"
 
-const cookieName = "revaboxy"
-
-const headerName = "revaboxy"
-
 // Version is one of the versions used in the A/B/C... test
 type Version struct {
 	// The name of the a/b testing version
@@ -42,6 +38,8 @@ type Logger interface {
 
 type settings struct {
 	logger       Logger
+	headerName   string
+	cookieName   string
 	roundTripper http.RoundTripper
 }
 
@@ -68,11 +66,32 @@ func WithTransport(rt http.RoundTripper) Setting {
 	}
 }
 
+// WithHeaderName sets the name of the header that is set for the downsteam service to use
+// The header will contain the name of the version used
+// If the value is not set with this setting, it will default to the default, "revaboxy-name"
+func WithHeaderName(headerName string) Setting {
+	return func(s *settings) {
+		s.headerName = headerName
+	}
+}
+
+// WithCookieName sets the name of the cookie that where the selected version is stored
+// If the value is not set with this setting, it will default to the default, "revaboxy-name"
+func WithCookieName(cookieName string) Setting {
+	return func(s *settings) {
+		s.cookieName = cookieName
+	}
+}
+
 // New creates a revaboxy client. Versions required but, any number of additional settings may be provided
 func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
+	// Default values
 	settings := &settings{
+		headerName:   "revaboxy-name",
+		cookieName:   "revaboxy-name",
 		roundTripper: http.DefaultTransport,
 	}
+	// Apply all settings
 	for _, s := range settingChangers {
 		s(settings)
 	}
@@ -89,31 +108,31 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	// The director changes the request. If the user has already been assigned a version, that one will be used.
 	// Otherwise a random version will be assigned to the user
 	director := func(req *http.Request) {
-		cookie, _ := req.Cookie(fmt.Sprintf("%s-name", cookieName))
+		cookie, _ := req.Cookie(settings.cookieName)
 
 		if cookie != nil {
 			version, ok := versions[cookie.Value]
 			if ok {
 				settings.Log(fmt.Sprintf("using previus used version %s", version.Name))
-				modifyRequest(req, version)
+				modifyRequest(settings, req, version)
 			} else {
 				settings.Log(fmt.Sprintf("could not use previus version %s and using a random version instead", cookie.Value))
-				modifyRequest(req, versions.getRandomVersion())
+				modifyRequest(settings, req, versions.getRandomVersion())
 			}
 		} else {
 			settings.Log(fmt.Sprintf("new request, using random version"))
-			modifyRequest(req, versions.getRandomVersion())
+			modifyRequest(settings, req, versions.getRandomVersion())
 		}
 	}
 
 	// Add a cookie to the response that
 	modifyResponse := func(r *http.Response) error {
-		name := r.Request.Header.Get(fmt.Sprintf("%s-name", headerName))
-		existingCookie, _ := r.Request.Cookie(fmt.Sprintf("%s-name", cookieName))
+		name := r.Request.Header.Get(settings.headerName)
+		existingCookie, _ := r.Request.Cookie(settings.cookieName)
 
 		if name != "" && (existingCookie == nil || versions.get(existingCookie.Value) != nil) {
 			newCookie := &http.Cookie{
-				Name:     fmt.Sprintf("%s-name", cookieName),
+				Name:     settings.cookieName,
 				Value:    name,
 				Path:     "/",
 				Expires:  time.Now().Add(time.Hour * 24 * 3),
@@ -130,7 +149,7 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	defaultReverseProxy := httputil.NewSingleHostReverseProxy(versions[DefaultName].URL)
 	defaultReverseProxy.Transport = settings.roundTripper
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
-		name := r.Header.Get(fmt.Sprintf("%s-name", headerName))
+		name := r.Header.Get(settings.headerName)
 		if name != "" && name != DefaultName {
 			settings.Log(fmt.Sprintf("could not connect to %s, using default instead", name))
 			defaultReverseProxy.ServeHTTP(w, r)
@@ -150,7 +169,7 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	}, nil
 }
 
-func modifyRequest(req *http.Request, targetVersion *Version) {
+func modifyRequest(s *settings, req *http.Request, targetVersion *Version) {
 	url := targetVersion.URL
 	targetQuery := url.RawQuery
 
@@ -167,7 +186,7 @@ func modifyRequest(req *http.Request, targetVersion *Version) {
 		req.Header.Set("User-Agent", "")
 	}
 
-	req.Header.Add(fmt.Sprintf("%s-name", headerName), targetVersion.Name)
+	req.Header.Add(s.headerName, targetVersion.Name)
 }
 
 func (revaboxy *Revaboxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
