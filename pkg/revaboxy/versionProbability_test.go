@@ -10,14 +10,20 @@ func TestNormalVersionProbability(t *testing.T) {
 	rand.Seed(1)
 
 	vv := &versions{}
-	vv.add(Version{
+	err := vv.add(Version{
 		Name:        "test1",
 		Probability: 0.1,
 	})
-	vv.add(Version{
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = vv.add(Version{
 		Name:        DefaultName,
 		Probability: 0.9,
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if err := vv.valid(); err != nil {
 		t.Error("versions should be valid", err)
@@ -32,14 +38,20 @@ func TestToMuchProbabilityVersionProbability(t *testing.T) {
 	rand.Seed(1)
 
 	vv := &versions{}
-	vv.add(Version{
+	err := vv.add(Version{
 		Name:        "test1",
 		Probability: 0.6,
 	})
-	vv.add(Version{
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = vv.add(Version{
 		Name:        DefaultName,
 		Probability: 0.6,
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if err := vv.valid(); err == nil {
 		t.Error("versions should be invalid", err)
@@ -49,14 +61,20 @@ func TestDublicateNameVersionProbability(t *testing.T) {
 	rand.Seed(1)
 
 	vv := &versions{}
-	vv.add(Version{
+	err := vv.add(Version{
 		Name:        "test1",
 		Probability: 0.3,
 	})
-	vv.add(Version{
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = vv.add(Version{
 		Name:        "test1",
 		Probability: 0.6,
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if err := vv.valid(); err == nil {
 		t.Error("versions should be invalid", err)
@@ -67,18 +85,27 @@ func TestDefaultNameRestProbability(t *testing.T) {
 	rand.Seed(1)
 
 	vv := &versions{}
-	vv.add(Version{
+	err := vv.add(Version{
 		Name:        "test1",
 		Probability: 0.1,
 	})
-	vv.add(Version{
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = vv.add(Version{
 		Name:        "test2",
 		Probability: 0.2,
 	})
-	vv.add(Version{
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = vv.add(Version{
 		Name:        DefaultName,
 		Probability: 0.3,
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if err := vv.valid(); err != nil {
 		t.Error("versions should be valid", err)

@@ -106,7 +106,10 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	// Add all versions
 	versions := versions{}
 	for _, v := range vv {
-		versions.add(v)
+		err := versions.add(v)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if err := versions.valid(); err != nil {
 		return nil, err

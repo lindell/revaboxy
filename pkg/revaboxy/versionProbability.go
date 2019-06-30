@@ -33,7 +33,7 @@ func (vv versions) add(v Version) error {
 }
 
 func (vv versions) get(name string) *Version {
-	v, _ := vv[name]
+	v := vv[name]
 	return v
 }
 
