@@ -51,6 +51,7 @@ func TestReverseProxyWithCookies(t *testing.T) {
 				"url2.test": "url2-data",
 			},
 		}),
+		WithCookieName("custom"),
 	)
 	if err != nil {
 		t.Fatal("could not create proxy", err)
