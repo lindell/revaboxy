@@ -14,38 +14,14 @@ import (
 	"github.com/lindell/revaboxy/pkg/revaboxy"
 )
 
-var urlRegexp = regexp.MustCompile("^VERSION_(.*)_URL")
-
 func main() {
 	host := envOrDefault("HOST", "")
 	port := envOrDefault("PORT", "8000")
 	addr := host + ":" + port
 
-	var versions []revaboxy.Version
-	for _, e := range os.Environ() {
-		pair := strings.Split(e, "=")
-		envName := pair[0]
-		envVal := pair[1]
-
-		if match := urlRegexp.FindStringSubmatch(envName); match != nil {
-			name := match[1]
-			probabilityStr := os.Getenv(fmt.Sprintf("VERSION_%s_PROBABILITY", name))
-			probability, err := strconv.ParseFloat(probabilityStr, 64)
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
-
-			u, err := url.Parse(envVal)
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
-
-			versions = append(versions, revaboxy.Version{
-				Name:        strings.ToLower(name),
-				URL:         u,
-				Probability: probability,
-			})
-		}
+	versions, err := versionsFromEnvVars()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	proxy, err := revaboxy.New(
@@ -61,6 +37,39 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+var urlRegexp = regexp.MustCompile("^VERSION_(.*)_URL$")
+
+func versionsFromEnvVars() ([]revaboxy.Version, error) {
+	var versions []revaboxy.Version
+	for _, e := range os.Environ() {
+		pair := strings.Split(e, "=")
+		envName := pair[0]
+		envVal := pair[1]
+
+		if match := urlRegexp.FindStringSubmatch(envName); match != nil {
+			name := match[1]
+			probabilityStr := os.Getenv(fmt.Sprintf("VERSION_%s_PROBABILITY", name))
+			probability, err := strconv.ParseFloat(probabilityStr, 64)
+			if err != nil {
+				return nil, err
+			}
+
+			u, err := url.Parse(envVal)
+			if err != nil {
+				return nil, err
+			}
+
+			versions = append(versions, revaboxy.Version{
+				Name:        strings.ToLower(name),
+				URL:         u,
+				Probability: probability,
+			})
+		}
+	}
+
+	return versions, nil
 }
 
 func envOrDefault(name, def string) string {
