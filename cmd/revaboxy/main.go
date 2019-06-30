@@ -24,9 +24,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Configuring settings
+	settings := []revaboxy.Setting{}
+	settings = append(settings, revaboxy.WithLogger(log.New(os.Stdout, "", log.Ldate|log.Ltime|log.LUTC)))
+	if headerName, ok := syscall.Getenv("HEADER_NAME"); ok {
+		settings = append(settings, revaboxy.WithHeaderName(headerName))
+	}
+	if cookieName, ok := syscall.Getenv("COOKIE_NAME"); ok {
+		settings = append(settings, revaboxy.WithCookieName(cookieName))
+	}
+
 	proxy, err := revaboxy.New(
 		versions,
-		revaboxy.WithLogger(log.New(os.Stdout, "", log.Ldate|log.Ltime|log.LUTC)),
+		settings...,
 	)
 	if err != nil {
 		log.Fatal(err)
