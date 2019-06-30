@@ -1,4 +1,5 @@
 [![GoDoc](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy?status.svg)](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy)
+[![Build Status](https://travis-ci.org/lindell/revaboxy.svg?branch=master)](https://travis-ci.org/lindell/revaboxy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lindell/revaboxy)](https://goreportcard.com/report/github.com/lindell/revaboxy)
 
 Revaboxy
