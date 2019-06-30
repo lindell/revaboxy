@@ -30,6 +30,6 @@ VERSION_GREEN_BACKGROUND_PROBABILITY=0.4
 #### Setting to change the behavior of revaboxy
 | Name | Default | Description |
 | ---- | ------- | ----------- |
-| HEADER_NAME | revaboxy-name | The header name sent to the downsteam application |
-| COOKIE_NAME | revaboxy-name | The cookie name that is set at the client to keep track of which version was selected |
+| `HEADER_NAME` | `revaboxy-name` | The header name sent to the downsteam application |
+| `COOKIE_NAME` | `revaboxy-name` | The cookie name that is set at the client to keep track of which version was selected |
 
