@@ -72,12 +72,9 @@ func TestDublicateNameVersionProbability(t *testing.T) {
 		Name:        "test1",
 		Probability: 0.6,
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	if err := vv.valid(); err == nil {
-		t.Error("versions should be invalid", err)
+	if err == nil { // NB
+		t.Fatal("versions should be invalid")
 	}
 }
 
