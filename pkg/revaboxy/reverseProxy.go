@@ -1,7 +1,6 @@
 package revaboxy
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -33,7 +32,7 @@ type Version struct {
 
 // Logger is the logger interface used with revaboxy
 type Logger interface {
-	Log(string)
+	Printf(string, ...interface{})
 }
 
 type settings struct {
@@ -41,12 +40,6 @@ type settings struct {
 	headerName   string
 	cookieName   string
 	roundTripper http.RoundTripper
-}
-
-func (s *settings) Log(log string) {
-	if s.logger != nil {
-		s.logger.Log(log)
-	}
 }
 
 // Setting changes the revaboxy settings
@@ -87,6 +80,7 @@ func WithCookieName(cookieName string) Setting {
 func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	// Default values
 	settings := &settings{
+		logger:       &nopLogger{},
 		headerName:   "revaboxy-name",
 		cookieName:   "revaboxy-name",
 		roundTripper: http.DefaultTransport,
@@ -95,6 +89,8 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	for _, s := range settingChangers {
 		s(settings)
 	}
+
+	logger := settings.logger
 
 	// Add all versions
 	versions := versions{}
@@ -113,14 +109,14 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 		if cookie != nil {
 			version, ok := versions[cookie.Value]
 			if ok {
-				settings.Log(fmt.Sprintf("using previus used version %s", version.Name))
+				logger.Printf("using previus used version %s", version.Name)
 				modifyRequest(settings, req, version)
 			} else {
-				settings.Log(fmt.Sprintf("could not use previus version %s and using a random version instead", cookie.Value))
+				logger.Printf("could not use previus version %s and using a random version instead", cookie.Value)
 				modifyRequest(settings, req, versions.getRandomVersion())
 			}
 		} else {
-			settings.Log(fmt.Sprintf("new request, using random version"))
+			logger.Printf("new request, using random version")
 			modifyRequest(settings, req, versions.getRandomVersion())
 		}
 	}
@@ -151,7 +147,7 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
 		name := r.Header.Get(settings.headerName)
 		if name != "" && name != DefaultName {
-			settings.Log(fmt.Sprintf("could not connect to %s, using default instead", name))
+			logger.Printf("could not connect to %s, using default instead", name)
 			defaultReverseProxy.ServeHTTP(w, r)
 			return
 		}
@@ -204,3 +200,7 @@ func singleJoiningSlash(a, b string) string {
 	}
 	return a + b
 }
+
+type nopLogger struct{}
+
+func (m *nopLogger) Printf(string, ...interface{}) {}

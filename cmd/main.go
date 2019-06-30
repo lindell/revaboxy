@@ -50,7 +50,7 @@ func main() {
 
 	proxy, err := revaboxy.New(
 		versions,
-		revaboxy.WithLogger(&logger{}),
+		revaboxy.WithLogger(log.New(os.Stdout, "", log.Ldate|log.Ltime|log.LUTC)),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -61,12 +61,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-type logger struct{}
-
-func (l *logger) Log(s string) {
-	fmt.Println("logger: " + s)
 }
 
 func envOrDefault(name, def string) string {
