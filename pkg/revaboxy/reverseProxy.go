@@ -36,9 +36,12 @@ type Logger interface {
 }
 
 type settings struct {
-	logger       Logger
-	headerName   string
+	logger     Logger
+	headerName string
+
 	cookieName   string
+	cookieExpiry time.Duration
+
 	roundTripper http.RoundTripper
 }
 
@@ -76,6 +79,13 @@ func WithCookieName(cookieName string) Setting {
 	}
 }
 
+// WithCookieExpiry sets the expiry time of the client cookie, default is 3 days
+func WithCookieExpiry(expiry time.Duration) Setting {
+	return func(s *settings) {
+		s.cookieExpiry = expiry
+	}
+}
+
 // New creates a revaboxy client. Versions required but, any number of additional settings may be provided
 func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	// Default values
@@ -83,6 +93,7 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 		logger:       &nopLogger{},
 		headerName:   "revaboxy-name",
 		cookieName:   "revaboxy-name",
+		cookieExpiry: time.Hour * 24 * 3,
 		roundTripper: http.DefaultTransport,
 	}
 	// Apply all settings
@@ -128,11 +139,10 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 
 		if name != "" && (existingCookie == nil || versions.get(existingCookie.Value) != nil) {
 			newCookie := &http.Cookie{
-				Name:     settings.cookieName,
-				Value:    name,
-				Path:     "/",
-				Expires:  time.Now().Add(time.Hour * 24 * 3),
-				HttpOnly: true,
+				Name:    settings.cookieName,
+				Value:   name,
+				Path:    "/",
+				Expires: time.Now().Add(settings.cookieExpiry),
 			}
 			r.Header.Add("Set-Cookie", newCookie.String())
 		}
