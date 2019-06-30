@@ -29,8 +29,8 @@ func main() {
 
 		if match := urlRegexp.FindStringSubmatch(envName); match != nil {
 			name := match[1]
-			percentageStr := os.Getenv(fmt.Sprintf("VERSION_%s_PERCENTAGE", name))
-			percentage, err := strconv.ParseFloat(percentageStr, 64)
+			probabilityStr := os.Getenv(fmt.Sprintf("VERSION_%s_PROBABILITY", name))
+			probability, err := strconv.ParseFloat(probabilityStr, 64)
 			if err != nil {
 				log.Fatalln(err.Error())
 			}
@@ -41,9 +41,9 @@ func main() {
 			}
 
 			versions = append(versions, revaboxy.Version{
-				Name:       strings.ToLower(name),
-				URL:        u,
-				Percentage: percentage,
+				Name:        strings.ToLower(name),
+				URL:         u,
+				Probability: probability,
 			})
 		}
 	}

@@ -16,8 +16,8 @@ type Revaboxy struct {
 }
 
 // DefaultName is the name of the default version
-// The version with this name will take up the rest of the percentage if any remain
-// when adding all percentages together
+// The version with this name will take up the rest of the probability if any remain
+// when adding all probabilitys together
 const DefaultName = "default"
 
 // Version is one of the versions used in the A/B/C... test
@@ -26,8 +26,8 @@ type Version struct {
 	Name string
 	// The URL to the root of the target
 	URL *url.URL
-	// The percentage from 0-1 of this version being used
-	Percentage float64
+	// The probability from 0-1 of this version being used
+	Probability float64
 }
 
 // Logger is the logger interface used with revaboxy

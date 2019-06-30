@@ -11,12 +11,12 @@ func TestNormalVersionProbability(t *testing.T) {
 
 	vv := &versions{}
 	vv.add(Version{
-		Name:       "test1",
-		Percentage: 0.1,
+		Name:        "test1",
+		Probability: 0.1,
 	})
 	vv.add(Version{
-		Name:       DefaultName,
-		Percentage: 0.9,
+		Name:        DefaultName,
+		Probability: 0.9,
 	})
 
 	if err := vv.valid(); err != nil {
@@ -28,17 +28,17 @@ func TestNormalVersionProbability(t *testing.T) {
 	}
 }
 
-func TestToMuchPercentageVersionProbability(t *testing.T) {
+func TestToMuchProbabilityVersionProbability(t *testing.T) {
 	rand.Seed(1)
 
 	vv := &versions{}
 	vv.add(Version{
-		Name:       "test1",
-		Percentage: 0.6,
+		Name:        "test1",
+		Probability: 0.6,
 	})
 	vv.add(Version{
-		Name:       DefaultName,
-		Percentage: 0.6,
+		Name:        DefaultName,
+		Probability: 0.6,
 	})
 
 	if err := vv.valid(); err == nil {
@@ -50,12 +50,12 @@ func TestDublicateNameVersionProbability(t *testing.T) {
 
 	vv := &versions{}
 	vv.add(Version{
-		Name:       "test1",
-		Percentage: 0.3,
+		Name:        "test1",
+		Probability: 0.3,
 	})
 	vv.add(Version{
-		Name:       "test1",
-		Percentage: 0.6,
+		Name:        "test1",
+		Probability: 0.6,
 	})
 
 	if err := vv.valid(); err == nil {
@@ -68,16 +68,16 @@ func TestDefaultNameRestProbability(t *testing.T) {
 
 	vv := &versions{}
 	vv.add(Version{
-		Name:       "test1",
-		Percentage: 0.1,
+		Name:        "test1",
+		Probability: 0.1,
 	})
 	vv.add(Version{
-		Name:       "test2",
-		Percentage: 0.2,
+		Name:        "test2",
+		Probability: 0.2,
 	})
 	vv.add(Version{
-		Name:       DefaultName,
-		Percentage: 0.3,
+		Name:        DefaultName,
+		Probability: 0.3,
 	})
 
 	if err := vv.valid(); err != nil {

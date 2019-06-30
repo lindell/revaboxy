@@ -35,14 +35,14 @@ func TestReverseProxyWithCookies(t *testing.T) {
 	proxy, err := New(
 		[]Version{
 			{
-				Name:       DefaultName,
-				URL:        url1,
-				Percentage: 0,
+				Name:        DefaultName,
+				URL:         url1,
+				Probability: 0,
 			},
 			{
-				Name:       "test2",
-				URL:        url2,
-				Percentage: 0.5,
+				Name:        "test2",
+				URL:         url2,
+				Probability: 0.5,
 			},
 		},
 		WithTransport(&testRoundTripper{
@@ -110,14 +110,14 @@ func TestReverseProxyWithUnavailableVersion(t *testing.T) {
 	proxy, err := New(
 		[]Version{
 			{
-				Name:       DefaultName,
-				URL:        defaultURL,
-				Percentage: 0,
+				Name:        DefaultName,
+				URL:         defaultURL,
+				Probability: 0,
 			},
 			{
-				Name:       "shouldfail",
-				URL:        failURL,
-				Percentage: 0.999,
+				Name:        "shouldfail",
+				URL:         failURL,
+				Probability: 0.999,
 			},
 		},
 		WithTransport(&testRoundTripper{

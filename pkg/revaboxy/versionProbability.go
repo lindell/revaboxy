@@ -12,11 +12,11 @@ func (vv versions) valid() error {
 		return fmt.Errorf("a version with the name %s needs to exist", DefaultName)
 	}
 
-	totalPercentage := 0.0
+	totalProbability := 0.0
 	for _, v := range vv {
-		totalPercentage += v.Percentage
+		totalProbability += v.Probability
 	}
-	if totalPercentage > 1 {
+	if totalProbability > 1 {
 		return fmt.Errorf("total percentage is more than 1")
 	}
 
@@ -40,12 +40,12 @@ func (vv versions) get(name string) *Version {
 func (vv versions) getRandomVersion() *Version {
 	n := rand.Float64()
 
-	addedPercentage := 0.0
+	addedProbability := 0.0
 	for _, v := range vv {
-		if n > addedPercentage && n < addedPercentage+v.Percentage {
+		if n > addedProbability && n < addedProbability+v.Probability {
 			return v
 		}
-		addedPercentage += v.Percentage
+		addedProbability += v.Probability
 	}
 
 	return vv[DefaultName]
