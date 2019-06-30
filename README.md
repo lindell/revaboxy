@@ -21,7 +21,7 @@ As an example, say we have two version, one called `DEFAULT` and one called `GRE
 ```bash
 VERSION_DEFAULT_URL=http://defaulturl
 VERSION_DEFAULT_PROBABILITY=0.6
-VERSION_GREEN_BACKGROUND_URL=http://defaulturl
+VERSION_GREEN_BACKGROUND_URL=http://greenbackgroundurl
 VERSION_GREEN_BACKGROUND_PROBABILITY=0.4
 ```
 
