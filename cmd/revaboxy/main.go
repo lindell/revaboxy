@@ -63,12 +63,12 @@ func versionsFromEnvVars() ([]revaboxy.Version, error) {
 			probabilityStr := os.Getenv(fmt.Sprintf("VERSION_%s_PROBABILITY", name))
 			probability, err := strconv.ParseFloat(probabilityStr, 64)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf(`could not parse %s probability "%s"`, name, probabilityStr)
 			}
 
 			u, err := url.Parse(envVal)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf(`could not parse %s url "%s"`, name, envVal)
 			}
 
 			versions = append(versions, revaboxy.Version{
