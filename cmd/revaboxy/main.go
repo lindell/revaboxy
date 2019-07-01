@@ -16,7 +16,7 @@ import (
 
 func main() {
 	host := envOrDefault("HOST", "")
-	port := envOrDefault("PORT", "8000")
+	port := envOrDefault("PORT", "80")
 	addr := host + ":" + port
 
 	versions, err := versionsFromEnvVars()
