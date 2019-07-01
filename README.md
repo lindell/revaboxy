@@ -31,6 +31,7 @@ VERSION_GREEN_BACKGROUND_PROBABILITY=0.4
 #### Setting to change the behavior of revaboxy
 | Name | Default | Description |
 | ---- | ------- | ----------- |
+| `HOST` | ` ` | The host that the server should listen to, the default value makes it listen on all hosts |
+| `PORT` | `80` | The port that server should listen on |
 | `HEADER_NAME` | `revaboxy-name` | The header name sent to the downsteam application |
 | `COOKIE_NAME` | `revaboxy-name` | The cookie name that is set at the client to keep track of which version was selected |
-
