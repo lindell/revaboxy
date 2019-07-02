@@ -143,3 +143,104 @@ func TestReverseProxyWithUnavailableVersion(t *testing.T) {
 		t.Fatalf("expected status code %v, got %v", expected, real)
 	}
 }
+
+func TestNew(t *testing.T) {
+	url, _ := url.Parse("http://an-url")
+
+	tests := []struct {
+		name     string
+		versions []Version
+		settings []Setting
+		wantErr  bool
+	}{
+		{
+			name: "valid",
+			versions: []Version{
+				{
+					Name:        DefaultName,
+					URL:         url,
+					Probability: 0,
+				},
+				{
+					Name:        "ab-test-1",
+					URL:         url,
+					Probability: 0.5,
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "no default",
+			versions: []Version{
+				{
+					Name:        "ab-test-1",
+					URL:         url,
+					Probability: 0.5,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "too much probability",
+			versions: []Version{
+				{
+					Name:        DefaultName,
+					URL:         url,
+					Probability: 0.6,
+				},
+				{
+					Name:        "ab-test-1",
+					URL:         url,
+					Probability: 0.5,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "multiple with same name",
+			versions: []Version{
+				{
+					Name:        DefaultName,
+					URL:         url,
+					Probability: 0.3,
+				},
+				{
+					Name:        "ab-test-1",
+					URL:         url,
+					Probability: 0.3,
+				},
+				{
+					Name:        "ab-test-1",
+					URL:         url,
+					Probability: 0.4,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "not 100%",
+			versions: []Version{
+				{
+					Name:        DefaultName,
+					URL:         url,
+					Probability: 0.3,
+				},
+				{
+					Name:        "ab-test-1",
+					URL:         url,
+					Probability: 0.3,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := New(tt.versions, tt.settings...)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
