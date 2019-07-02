@@ -91,7 +91,7 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	// Default values
 	settings := &settings{
 		logger:       &nopLogger{},
-		headerName:   "revaboxy-name",
+		headerName:   "Revaboxy-Name",
 		cookieName:   "revaboxy-name",
 		cookieExpiry: time.Hour * 24 * 3,
 		roundTripper: http.DefaultTransport,
