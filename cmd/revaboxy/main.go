@@ -11,6 +11,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/lindell/revaboxy/internal/time"
+
 	"github.com/lindell/revaboxy/pkg/revaboxy"
 )
 
@@ -32,6 +34,13 @@ func main() {
 	}
 	if cookieName, ok := syscall.Getenv("COOKIE_NAME"); ok {
 		settings = append(settings, revaboxy.WithCookieName(cookieName))
+	}
+	if cookieExpiryStr, ok := syscall.Getenv("COOKIE_EXPIRY"); ok {
+		cookieExpiry, err := time.ParseDuration(cookieExpiryStr)
+		if err != nil {
+			log.Fatal("could not parse cookie expiry", err)
+		}
+		settings = append(settings, revaboxy.WithCookieExpiry(cookieExpiry))
 	}
 
 	proxy, err := revaboxy.New(
