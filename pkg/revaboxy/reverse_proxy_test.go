@@ -244,3 +244,97 @@ func TestNew(t *testing.T) {
 		})
 	}
 }
+
+func Test_modifyRequestUrl(t *testing.T) {
+
+	settings := &settings{
+		headerName: "test",
+	}
+
+	tests := []struct {
+		name    string
+		reqURL  string
+		version *Version
+		wantURL *url.URL
+	}{
+		{
+			name:   "no path",
+			reqURL: "http://example.com/",
+			version: &Version{
+				URL: mustUrlParse("http://test.com/"),
+			},
+			wantURL: mustUrlParse("http://test.com/"),
+		},
+		{
+			name:   "no path 2",
+			reqURL: "http://example.com",
+			version: &Version{
+				URL: mustUrlParse("http://test.com"),
+			},
+			wantURL: mustUrlParse("http://test.com/"),
+		},
+		{
+			name:   "req path",
+			reqURL: "http://example.com/test",
+			version: &Version{
+				URL: mustUrlParse("http://test.com"),
+			},
+			wantURL: mustUrlParse("http://test.com/test"),
+		},
+		{
+			name:   "version path",
+			reqURL: "http://example.com/",
+			version: &Version{
+				URL: mustUrlParse("http://test.com/test"),
+			},
+			wantURL: mustUrlParse("http://test.com/test/"),
+		},
+		{
+			name:   "both path",
+			reqURL: "http://example.com/test1",
+			version: &Version{
+				URL: mustUrlParse("http://test.com/test2"),
+			},
+			wantURL: mustUrlParse("http://test.com/test2/test1"),
+		},
+		{
+			name:   "both path 2",
+			reqURL: "http://example.com/test1/",
+			version: &Version{
+				URL: mustUrlParse("http://test.com/test2/"),
+			},
+			wantURL: mustUrlParse("http://test.com/test2/test1/"),
+		},
+		{
+			name:   "query",
+			reqURL: "http://example.com/test1?test1=test1",
+			version: &Version{
+				URL: mustUrlParse("http://test.com/test2?test2=test2"),
+			},
+			wantURL: mustUrlParse("http://test.com/test2/test1?test2=test2&test1=test1"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodGet, tt.reqURL, nil)
+			if err != nil {
+				t.Fatal("could not parse url", err)
+			}
+
+			modifyRequest(settings, req, tt.version)
+
+			if *req.URL != *tt.wantURL {
+				t.Errorf("modifyRequest url = %s, wantURL = %s", req.URL.String(), tt.wantURL.String())
+				return
+			}
+		})
+	}
+}
+
+func mustUrlParse(s string) *url.URL {
+	u, err := url.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
