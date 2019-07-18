@@ -11,6 +11,14 @@ import (
 	"testing"
 )
 
+func mustUrlParse(s string) *url.URL {
+	u, err := url.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}
+
 type testRoundTripper struct {
 	hostAnswer map[string]string
 }
@@ -331,10 +339,46 @@ func Test_modifyRequestUrl(t *testing.T) {
 	}
 }
 
-func mustUrlParse(s string) *url.URL {
-	u, err := url.Parse(s)
-	if err != nil {
-		panic(err)
+type testLogger struct {
+	logs int
+}
+
+func (l *testLogger) Printf(string, ...interface{}) {
+	l.logs++
+}
+
+func Test_WithLogger(t *testing.T) {
+
+	l := &testLogger{}
+	rt := &testRoundTripper{
+		hostAnswer: map[string]string{},
 	}
-	return u
+
+	proxy, err := New(
+		[]Version{
+			{
+				Name:        DefaultName,
+				URL:         mustUrlParse("http://example.com"),
+				Probability: 0,
+			},
+			{
+				Name:        "test",
+				URL:         mustUrlParse("http://example.com"),
+				Probability: 1,
+			},
+		},
+		WithTransport(rt),
+		WithLogger(l),
+	)
+	if err != nil {
+		t.Fatal("should not error when creating revaboxy")
+	}
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "http://example.com", nil)
+	proxy.ServeHTTP(rec, req)
+
+	if real, expected := l.logs, 2; real != expected {
+		t.Fatalf("expected %v logs, got %v", expected, real)
+	}
 }
