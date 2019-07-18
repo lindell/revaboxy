@@ -4,7 +4,7 @@ before_install:
 script:
 - go test ./...
 - make build-all
-- $GOPATH/bin/goveralls -service=travis-ci
+- $GOPATH/bin/goveralls -service=travis-ci -package=./pkg/...
 before_deploy:
 - curl https://github.com/lindell/github-release-cli/releases/download/1.2.0/github-releaser-travis -L --output github-releaser && chmod +x github-releaser
 - export BODY=$(envsubst < ./deployments/CHANGELOG.md)
