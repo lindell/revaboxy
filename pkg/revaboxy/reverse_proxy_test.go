@@ -382,3 +382,47 @@ func Test_WithLogger(t *testing.T) {
 		t.Fatalf("expected %v logs, got %v", expected, real)
 	}
 }
+
+type savingRoundtripper struct {
+	req *http.Request
+}
+
+func (rt *savingRoundtripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	rt.req = &(*req)
+
+	return &http.Response{
+		Header:     make(http.Header),
+		Request:    req,
+		Body:       ioutil.NopCloser(strings.NewReader("test answer")),
+		StatusCode: http.StatusOK,
+	}, nil
+}
+
+func Test_WithHeader(t *testing.T) {
+	rt := &savingRoundtripper{}
+
+	const newHeaderName = "Test-Name"
+
+	proxy, err := New(
+		[]Version{
+			{
+				Name:        DefaultName,
+				URL:         mustUrlParse("http://example.com"),
+				Probability: 1,
+			},
+		},
+		WithHeaderName(newHeaderName),
+		WithTransport(rt),
+	)
+	if err != nil {
+		t.Fatal("should not error when creating revaboxy")
+	}
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "http://example.com", nil)
+	proxy.ServeHTTP(rec, req)
+
+	if real, expected := rt.req.Header.Get(newHeaderName), DefaultName; real != expected {
+		t.Fatalf(`expected "%s" header to be "%s", got "%s"`, newHeaderName, expected, real)
+	}
+}
