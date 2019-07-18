@@ -34,6 +34,6 @@ VERSION_GREEN_BACKGROUND_PROBABILITY=0.4
 | --------------- | --------------- | ----------------------------------------------------------------------------------------- |
 | `HOST`          | ` `             | The host that the server should listen to, the default value makes it listen on all hosts |
 | `PORT`          | `80`            | The port that server should listen on                                                     |
-| `HEADER_NAME`   | `Revaboxy-Name` | The header name sent to the downsteam application                                         |
-| `COOKIE_NAME`   | `revaboxy-name` | The cookie name that is set at the client to keep track of which version was selected     |
+| `HEADER_NAME`   | `Revaboxy‑Name` | The header name sent to the downsteam application                                         |
+| `COOKIE_NAME`   | `revaboxy‑name` | The cookie name that is set at the client to keep track of which version was selected     |
 | `COOKIE_EXPIRY` | `7d`            | The time before the cookie containing the a/b test version expires                        |
