@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
 func mustURLParse(s string) *url.URL {
@@ -424,5 +425,49 @@ func Test_WithHeader(t *testing.T) {
 
 	if real, expected := rt.req.Header.Get(newHeaderName), DefaultName; real != expected {
 		t.Fatalf(`expected "%s" header to be "%s", got "%s"`, newHeaderName, expected, real)
+	}
+}
+
+func durationAbs(d time.Duration) time.Duration {
+	if d < 0 {
+		return -d
+	}
+	return d
+}
+
+func Test_WithCookieExpiry(t *testing.T) {
+	rt := &savingRoundtripper{}
+
+	expiryDuration := time.Hour * 4
+
+	proxy, err := New(
+		[]Version{
+			{
+				Name:        DefaultName,
+				URL:         mustURLParse("http://example.com"),
+				Probability: 1,
+			},
+		},
+		WithCookieExpiry(expiryDuration),
+		WithTransport(rt),
+	)
+	if err != nil {
+		t.Fatal("should not error when creating revaboxy")
+	}
+
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "http://example.com", nil)
+	proxy.ServeHTTP(rec, req)
+
+	cookies := rec.Result().Cookies()
+
+	if real, expected := len(cookies), 1; real != expected {
+		t.Fatalf(`expected %d cookies, got %d"`, real, expected)
+	}
+
+	cookie := cookies[0]
+	diffDuration := cookie.Expires.Add(-expiryDuration).Sub(time.Now())
+	if durationAbs(diffDuration) > time.Second {
+		t.Fatalf(`expected cookie to have expiry set correctly`)
 	}
 }
