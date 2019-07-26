@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func mustUrlParse(s string) *url.URL {
+func mustURLParse(s string) *url.URL {
 	u, err := url.Parse(s)
 	if err != nil {
 		panic(err)
@@ -269,57 +269,57 @@ func Test_modifyRequestUrl(t *testing.T) {
 			name:   "no path",
 			reqURL: "http://example.com/",
 			version: &Version{
-				URL: mustUrlParse("http://test.com/"),
+				URL: mustURLParse("http://test.com/"),
 			},
-			wantURL: mustUrlParse("http://test.com/"),
+			wantURL: mustURLParse("http://test.com/"),
 		},
 		{
 			name:   "no path 2",
 			reqURL: "http://example.com",
 			version: &Version{
-				URL: mustUrlParse("http://test.com"),
+				URL: mustURLParse("http://test.com"),
 			},
-			wantURL: mustUrlParse("http://test.com/"),
+			wantURL: mustURLParse("http://test.com/"),
 		},
 		{
 			name:   "req path",
 			reqURL: "http://example.com/test",
 			version: &Version{
-				URL: mustUrlParse("http://test.com"),
+				URL: mustURLParse("http://test.com"),
 			},
-			wantURL: mustUrlParse("http://test.com/test"),
+			wantURL: mustURLParse("http://test.com/test"),
 		},
 		{
 			name:   "version path",
 			reqURL: "http://example.com/",
 			version: &Version{
-				URL: mustUrlParse("http://test.com/test"),
+				URL: mustURLParse("http://test.com/test"),
 			},
-			wantURL: mustUrlParse("http://test.com/test/"),
+			wantURL: mustURLParse("http://test.com/test/"),
 		},
 		{
 			name:   "both path",
 			reqURL: "http://example.com/test1",
 			version: &Version{
-				URL: mustUrlParse("http://test.com/test2"),
+				URL: mustURLParse("http://test.com/test2"),
 			},
-			wantURL: mustUrlParse("http://test.com/test2/test1"),
+			wantURL: mustURLParse("http://test.com/test2/test1"),
 		},
 		{
 			name:   "both path 2",
 			reqURL: "http://example.com/test1/",
 			version: &Version{
-				URL: mustUrlParse("http://test.com/test2/"),
+				URL: mustURLParse("http://test.com/test2/"),
 			},
-			wantURL: mustUrlParse("http://test.com/test2/test1/"),
+			wantURL: mustURLParse("http://test.com/test2/test1/"),
 		},
 		{
 			name:   "query",
 			reqURL: "http://example.com/test1?test1=test1",
 			version: &Version{
-				URL: mustUrlParse("http://test.com/test2?test2=test2"),
+				URL: mustURLParse("http://test.com/test2?test2=test2"),
 			},
-			wantURL: mustUrlParse("http://test.com/test2/test1?test2=test2&test1=test1"),
+			wantURL: mustURLParse("http://test.com/test2/test1?test2=test2&test1=test1"),
 		},
 	}
 	for _, tt := range tests {
@@ -358,12 +358,12 @@ func Test_WithLogger(t *testing.T) {
 		[]Version{
 			{
 				Name:        DefaultName,
-				URL:         mustUrlParse("http://example.com"),
+				URL:         mustURLParse("http://example.com"),
 				Probability: 0,
 			},
 			{
 				Name:        "test",
-				URL:         mustUrlParse("http://example.com"),
+				URL:         mustURLParse("http://example.com"),
 				Probability: 1,
 			},
 		},
@@ -407,7 +407,7 @@ func Test_WithHeader(t *testing.T) {
 		[]Version{
 			{
 				Name:        DefaultName,
-				URL:         mustUrlParse("http://example.com"),
+				URL:         mustURLParse("http://example.com"),
 				Probability: 1,
 			},
 		},
