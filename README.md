@@ -1,12 +1,14 @@
+<img src="http://share.lindell.me/revaboxy/revaboxy.png" alt="Revabboxy logo" width="500" />
+
 [![GoDoc](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy?status.svg)](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy)
 [![Build Status](https://travis-ci.org/lindell/revaboxy.svg?branch=master)](https://travis-ci.org/lindell/revaboxy)
 [![Docker Image](https://images.microbadger.com/badges/image/lindell/revaboxy.svg)](https://hub.docker.com/r/lindell/revaboxy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lindell/revaboxy)](https://goreportcard.com/report/github.com/lindell/revaboxy)
 [![Coverage Status](https://coveralls.io/repos/github/lindell/revaboxy/badge.svg?branch=master)](https://coveralls.io/github/lindell/revaboxy?branch=master)
 
-Revaboxy
+Overview
 ----
-Revaboxy is a reverse proxy made solely for A/B testing of front end applications.
+Revaboxy is a reverse proxy made for A/B testing of front end applications.
 It is placed in front of two or more versions of a frontend and does randomize the trafic to the different versions based on probability.
 When a users browser makes subsequent requests, revaboxy will automaticly select the same version as before.
 
