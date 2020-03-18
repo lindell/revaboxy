@@ -160,11 +160,12 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
 		name := r.Header.Get(settings.headerName)
 		if name != "" && name != DefaultName {
-			logger.Printf("could not connect to %s, using default instead", name)
+			logger.Printf("could not connect to %s, using default instead: %s", name, err)
 			defaultReverseProxy.ServeHTTP(w, r)
 			return
 		}
 
+		logger.Printf("could not connect to the default version: %s", err)
 		w.WriteHeader(http.StatusBadGateway)
 	}
 
