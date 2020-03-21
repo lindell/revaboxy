@@ -17,7 +17,7 @@ type Revaboxy struct {
 
 // DefaultName is the name of the default version
 // The version with this name will take up the rest of the probability if any remain
-// when adding all probabilitys together
+// when adding all probabilities together
 const DefaultName = "default"
 
 // Version is one of the versions used in the A/B/C... test
@@ -123,10 +123,10 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 		if cookie != nil {
 			version, ok := versions[cookie.Value]
 			if ok {
-				logger.Printf("using previus used version %s", version.Name)
+				logger.Printf("using previous used version %s", version.Name)
 				modifyRequest(settings, req, version)
 			} else {
-				logger.Printf("could not use previus version %s and using a random version instead", cookie.Value)
+				logger.Printf("could not use previous version %s and using a random version instead", cookie.Value)
 				modifyRequest(settings, req, versions.getRandomVersion())
 			}
 		} else {
@@ -135,7 +135,8 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 		}
 	}
 
-	// Add a cookie to the response that
+	// Add a cookie to the response that tracks which version the user got
+	// so that the following requests will use the same version
 	modifyResponse := func(r *http.Response) error {
 		name := r.Request.Header.Get(settings.headerName)
 		existingCookie, _ := r.Request.Cookie(settings.cookieName)
