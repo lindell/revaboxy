@@ -2,7 +2,8 @@
 
 [![GoDoc](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy?status.svg)](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy)
 [![Build Status](https://travis-ci.org/lindell/revaboxy.svg?branch=master)](https://travis-ci.org/lindell/revaboxy)
-[![Docker Image](https://images.microbadger.com/badges/image/lindell/revaboxy.svg)](https://hub.docker.com/r/lindell/revaboxy)
+[![Docker Image Size](https://img.shields.io/docker/image-size/lindell/revaboxy/latest)](https://hub.docker.com/r/lindell/revaboxy)
+[![Docker Pulls](https://img.shields.io/docker/pulls/lindell/revaboxy)](https://hub.docker.com/r/lindell/revaboxy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lindell/revaboxy)](https://goreportcard.com/report/github.com/lindell/revaboxy)
 [![Coverage Status](https://coveralls.io/repos/github/lindell/revaboxy/badge.svg?branch=master)](https://coveralls.io/github/lindell/revaboxy?branch=master)
 
