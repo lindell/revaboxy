@@ -2,6 +2,7 @@ package revaboxy
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -259,7 +260,6 @@ func TestNew(t *testing.T) {
 }
 
 func Test_modifyRequestUrl(t *testing.T) {
-
 	settings := &settings{
 		headerName: "test",
 	}
@@ -353,7 +353,6 @@ func (l *testLogger) Printf(string, ...interface{}) {
 }
 
 func Test_WithLogger(t *testing.T) {
-
 	l := &testLogger{}
 	rt := &testRoundTripper{
 		hostAnswer: map[string]string{},
@@ -393,7 +392,7 @@ type savingRoundtripper struct {
 }
 
 func (rt *savingRoundtripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	rt.req = &(*req)
+	rt.req = req.Clone(context.Background())
 
 	return &http.Response{
 		Header:     make(http.Header),
@@ -470,7 +469,7 @@ func Test_WithCookieExpiry(t *testing.T) {
 	}
 
 	cookie := cookies[0]
-	diffDuration := cookie.Expires.Add(-expiryDuration).Sub(time.Now())
+	diffDuration := time.Until(cookie.Expires.Add(-expiryDuration))
 	if durationAbs(diffDuration) > time.Second {
 		t.Fatalf(`expected cookie to have expiry set correctly`)
 	}
