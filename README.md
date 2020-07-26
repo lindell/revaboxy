@@ -2,7 +2,7 @@
 <img src="http://share.lindell.me/revaboxy/revaboxy.png" alt="Revabboxy logo" width="500" />
 
 [![GoDoc](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy?status.svg)](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy)
-[![Build Status](https://travis-ci.org/lindell/revaboxy.svg?branch=master)](https://travis-ci.org/lindell/revaboxy)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lindell/revaboxy/Go)](https://github.com/lindell/revaboxy/actions?query=workflow%3AGo)
 [![Docker Image Size](https://img.shields.io/docker/image-size/lindell/revaboxy/latest)](https://hub.docker.com/r/lindell/revaboxy)
 [![Docker Pulls](https://img.shields.io/docker/pulls/lindell/revaboxy)](https://hub.docker.com/r/lindell/revaboxy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lindell/revaboxy)](https://goreportcard.com/report/github.com/lindell/revaboxy)
