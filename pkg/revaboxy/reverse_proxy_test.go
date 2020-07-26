@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/http/cookiejar"
 	"net/http/httptest"
 	"net/url"
 	"strings"
@@ -41,6 +42,9 @@ func TestReverseProxyWithCookies(t *testing.T) {
 	// Setup the server
 	url1, _ := url.Parse("http://url1.test/path1")
 	url2, _ := url.Parse("http://url2.test/path2")
+
+	cookieJar, _ := cookiejar.New(nil)
+
 	proxy, err := New(
 		[]Version{
 			{
@@ -83,13 +87,13 @@ func TestReverseProxyWithCookies(t *testing.T) {
 		t.Fatal("could not read body")
 	}
 
-	cookies := recorder.Result().Cookies()
+	cookieJar.SetCookies(req.URL, recorder.Result().Cookies())
 
 	// Makes sure that subsequent requests uses the same path
 	for i := 0; i < 10; i++ {
 		recorder := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodGet, "http://baseurl.com/basepath", nil)
-		for _, c := range cookies {
+		for _, c := range cookieJar.Cookies(req.URL) {
 			req.AddCookie(c)
 		}
 		if err != nil {
@@ -108,7 +112,7 @@ func TestReverseProxyWithCookies(t *testing.T) {
 			t.Fatalf("expected body to be equal to the first body (%s) but got %s", expected, real)
 		}
 
-		cookies = recorder.Result().Cookies()
+		cookieJar.SetCookies(req.URL, recorder.Result().Cookies())
 	}
 }
 

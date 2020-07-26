@@ -141,7 +141,7 @@ func New(vv []Version, settingChangers ...Setting) (*Revaboxy, error) {
 		name := r.Request.Header.Get(settings.headerName)
 		existingCookie, _ := r.Request.Cookie(settings.cookieName)
 
-		if name != "" && (existingCookie == nil || versions.get(existingCookie.Value) != nil) {
+		if name != "" && (existingCookie == nil || versions.get(existingCookie.Value) == nil) {
 			newCookie := &http.Cookie{
 				Name:    settings.cookieName,
 				Value:   name,
