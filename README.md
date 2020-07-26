@@ -1,3 +1,4 @@
+<div align="center">
 <img src="http://share.lindell.me/revaboxy/revaboxy.png" alt="Revabboxy logo" width="500" />
 
 [![GoDoc](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy?status.svg)](https://godoc.org/github.com/lindell/revaboxy/pkg/revaboxy)
@@ -6,6 +7,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/lindell/revaboxy)](https://hub.docker.com/r/lindell/revaboxy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lindell/revaboxy)](https://goreportcard.com/report/github.com/lindell/revaboxy)
 [![Coverage Status](https://coveralls.io/repos/github/lindell/revaboxy/badge.svg?branch=master)](https://coveralls.io/github/lindell/revaboxy?branch=master)
+</div>
 
 Overview
 ----
