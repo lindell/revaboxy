@@ -16,6 +16,8 @@ builds:
         goarch: arm
       - goos: darwin
         goarch: arm64
+      - goos: darwin
+        goarch: 386
 archives:
   - replacements:
       darwin: Darwin
